@@ -1,106 +1,24 @@
 #include<iostream>
 #include<conio.h>
-#include <unistd.h>
 #include<cstdlib>
+#include<ctime>
+#include "LinkedList.h"
+#include <windows.h>
 using namespace std;
 
-class Node
+class Food
 {
-	int x;
-	int y;
-	Node *link;
-	
 	public:
-	Node(int ix,int iy)
+	int foodx;
+	int foody;
+	void genFood(int l,int h)
 	{
-		x=ix;
-		y=iy;
-		link=nullptr;
-	}
-	
-	int getx()
-	{
-		return x;
-	}
-	void setx(int x)
-	{
-		this->x=x;
-	}
-	int gety()
-	{
-		return y;
-	}
-	void sety(int y)
-	{
-		this->y=y;
-	}
-	
-	Node* getLink()
-	{
-		return link;
-	}
-	void setLink(Node* x)
-	{
-		link=x;
+		srand(time(0));
+		foodx=(rand()%(l-2))+1;
+		foody=(rand()%(h-2))+1;
 	}
 };
 
-class LL
-{
-	public:
-	Node* head;
-	LL()
-	{
-		head=nullptr;
-	}
-	
-	void insert(int x,int y)
-	{
-		Node* mynode=new Node(x,y);
-		Node* temp=head;
-		head=mynode;
-		head->setLink(temp);
-	}
-	
-//	For Debugging:
-//	void showList()
-//	{
-//		Node* cur=head;
-//		while(cur->getLink()!=nullptr)
-//		{
-//			cout<<cur->getx()<<" "<<cur->gety()<<" --> ";
-//			cur=cur->getLink();
-//		}
-//		cout<<cur->getx()<<" "<<cur->gety()<<endl;
-//	}
-	
-	int* show(int l)
-	{
-
-		int* arr=new int(2*l);
-		int i=0;
-		Node* cur=head;
-		while(cur!=nullptr)
-		{
-			arr[i]=cur->getx();
-			arr[i+1]=cur->gety();
-			i+=2;
-			cur=cur->getLink();
-		}
-		return arr;
-	}
-	
-	~LL()
-	{
-		Node* temp=head;
-		while(head!=nullptr)
-		{
-			temp=head->getLink();
-			delete head;
-			head=temp;
-		}
-	}
-};
 
 class Snake
 {
@@ -129,6 +47,12 @@ class Snake
 		mysnake->insert(x,y);
 	}
 	
+	void move(int x,int y)
+	{
+		mysnake->insert(x,y);
+		mysnake->del();
+	}
+	
 	int* showSnake()
 	{
 		return mysnake->show(length);
@@ -148,7 +72,9 @@ class Window
 {
 	int length;
 	int hieght;
+	int snk_direction;
 	Snake* snk;
+	Food* fd;
 	int* arr;
 	
 	public:
@@ -157,8 +83,10 @@ class Window
 		
 		length=l;
 		hieght=h;
+		snk_direction=80;
 		snk=new Snake(4,posx-3,posy);
-		arr=snk->showSnake();
+		fd=new Food();
+//		arr=snk->showSnake();
 		
 //		rungame();
 //		For Debugging:
@@ -171,51 +99,116 @@ class Window
 	void rungame()
 	{
 		char ch;
+		fd->genFood(length,hieght);
 		while(true)
 		{
 			if(kbhit())
 			{
-			ch = _getch();
-			if(int(ch)==27)
+				ch = _getch();
+				if(int(ch)==27)
+					break;
+				else if(int(ch)==-32||int(ch)==0)
+				{	
+					switch(_getch())
+			    	{
+			        	case 72:
+			        	//cout<<"UP";
+			        	if(snk_direction!=80)
+			        	{
+			        		snk_direction=72;
+			        		snk->move(snk->getHeadX()-1,snk->getHeadY());
+						}
+			        	break;
+			
+			        	case 80:
+			        	//cout<<"DOWN";
+			        	if(snk_direction!=72)
+			        	{
+			        		snk_direction=80;
+			        		snk->move(snk->getHeadX()+1,snk->getHeadY());
+						}
+						break;
+		        
+						case 75:
+			            //cout<<"LEFT";
+			            if(snk_direction!=77)
+			        	{
+			        		snk_direction=75;
+			        		snk->move(snk->getHeadX(),snk->getHeadY()-1);
+						}
+						break;
+			
+			        	case 77:
+			        	//cout<<"RIGHT";
+			            if(snk_direction!=75)
+			        	{
+			        		snk_direction=77;
+			        		snk->move(snk->getHeadX(),snk->getHeadY()+1);
+						}
+						break;
+			    	}
+				}
+			}
+			else
+			{
+				switch(snk_direction)
+		    	{
+		        	case 72:
+		        	snk->move(snk->getHeadX()-1,snk->getHeadY());
+		        	break;
+		
+		        	case 80:
+		        	snk->move(snk->getHeadX()+1,snk->getHeadY());
+		        	break;
+	        
+					case 75:
+		            snk->move(snk->getHeadX(),snk->getHeadY()-1);
+		        	break;
+		
+		        	case 77:
+		            snk->move(snk->getHeadX(),snk->getHeadY()+1);
+		        	break;
+		    	}
+				
+			}
+			if(snk->getHeadX()==0||snk->getHeadX()==length-1||snk->getHeadY()==0||snk->getHeadY()==hieght-1)
+			{
 				break;
-//			else if(int(ch)==-32||int(ch)==0)
-//			{	
-//				switch(_getch())
-//		    	{
-//		        	case 72:
-//		        	//cout<<"UP";
-//		        	snk->eatFood(snk->getHeadX(),snk->getHeadY()+1);
-//		        	break;
-//		
-//		        	case 80:
-//		        	//cout<<"DOWN";
-//		        	z=80;
-//		        	y++;
-//					break;
-//		        
-//					case 75:
-//		            //cout<<"LEFT";
-//		            z=75;
-//		            x--;
-//					break;
-//		
-//		        	case 77:
-//		        	z=77;
-//		        	//cout<<"RIGHT";
-//		            x++;
-//					break;
-//		    	}
-//			}
+			}
+			if(snk->getHeadX()==fd->foodx && snk->getHeadY()==fd->foody)
+			{
+				switch(snk_direction)
+		    	{
+		        	case 72:
+		        	snk->eatFood(fd->foodx-1,fd->foody);
+		        	fd->genFood(length,hieght);
+		        	break;
+		
+		        	case 80:
+		        	snk->eatFood(fd->foodx+1,fd->foody);
+		        	fd->genFood(length,hieght);
+		        	break;
+	        
+					case 75:
+		            snk->eatFood(fd->foodx,fd->foody-1);
+		            fd->genFood(length,hieght);
+		        	break;
+		
+		        	case 77:
+		            snk->eatFood(fd->foodx,fd->foody+1);
+		            fd->genFood(length,hieght);
+		        	break;
+		    	}
 			}
 			draw();
+			Sleep(10);
 		}
 	}
 	
 	void draw()
 	{
-//		system("cls");
-//		arr=snk->showSnake();
-//		cout<<"world ";
+		system("cls");
+		arr=snk->showSnake();
 		bool flag;
 		for(int i=0;i<length;i++)
 		{
@@ -233,12 +226,19 @@ class Window
 					{
 						if(i==arr[2*k]&&j==arr[2*k+1])
 						{
-							cout<<"O";
+							if(k==0)
+								cout<<"@";
+							else
+								cout<<"0";
 							flag=1;
 						}
 					}
 				}
-
+				if(i==fd->foodx&&j==fd->foody)
+				{
+					cout<<"=";
+					flag=1;
+				}
 				if(flag==0)
 				{
 					cout<<" ";
@@ -249,14 +249,12 @@ class Window
 //		For Debugging:
 //		for(int k=0;k<snk->getLength();k++)
 //			cout<<arr[2*k]<<" "<<arr[2*k+1]<<" ";
-		usleep(100000);
 	}
 };
 
 int main()
 {
 	Window win(30,50,15,25);
-//	cout<<"hello ";
 	win.rungame();
 	return 0;
 }
