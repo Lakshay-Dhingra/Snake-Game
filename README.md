@@ -1,4 +1,3 @@
 # Snake-Game
-It is a Simple Snake Game developed in C++11 which runs in console.
-Run this in windows os in std-c++11
-I'll try to improve it further.
+It is a Simple Console-Based Snake Game Developed in Windows OS with Mingw Compiler (std-c++11)
+
