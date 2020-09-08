@@ -7,6 +7,7 @@ At start press any key:
 <br><br>
 ![](https://raw.githubusercontent.com/Lakshay-Dhingra/Snake-Game/master/images/img1.PNG)
 <br><br>
+Make sure to fullscreen the console window.<br>
 Press Space to start game, Snake's head is @ and food is +:
 <br><br>
 ![](https://raw.githubusercontent.com/Lakshay-Dhingra/Snake-Game/master/images/img2.PNG)
